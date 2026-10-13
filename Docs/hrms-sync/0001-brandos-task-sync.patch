@@ -1,0 +1,223 @@
+From 5cb528bcd6eb9120613d6baa57961dbd6307a453 Mon Sep 17 00:00:00 2001
+From: priyadharshini <priyadharshini.m@digifyce.com>
+Date: Mon, 28 Sep 2026 11:16:54 +0530
+Subject: [PATCH] Add two-way task sync with the new Brand OS app
+
+Mirrors the existing DigiOps sync pattern but over a webhook, since Brand
+OS lives on a separate host: outbound task creation/updates go through
+Brand OS's REST API, and HRMS status changes push back through a new
+/webhooks/hrms-task-status call added alongside every existing
+_digiops_task_sync() call site.
+
+- migrate_brandos_link.php: adds tasks.brandos_deliverable_id
+- brandos_sync_helper.php: _brandos_task_sync(), configured via
+  BRANDOS_WEBHOOK_URL / BRANDOS_WEBHOOK_SECRET in .env
+- api.php: tasks POST/PUT now accept brandos_deliverable_id so Brand OS
+  can tag a task as its own when creating it via the API
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+---
+ .env.brandos.example     | 12 ++++++++++++
+ api.php                  |  7 ++++---
+ brandos_sync_helper.php  | 38 ++++++++++++++++++++++++++++++++++++++
+ migrate_brandos_link.php | 20 ++++++++++++++++++++
+ task_detail.php          |  2 ++
+ tasks.php                |  6 ++++++
+ 6 files changed, 82 insertions(+), 3 deletions(-)
+ create mode 100644 .env.brandos.example
+ create mode 100644 brandos_sync_helper.php
+ create mode 100644 migrate_brandos_link.php
+
+diff --git a/.env.brandos.example b/.env.brandos.example
+new file mode 100644
+index 0000000..1fa6065
+--- /dev/null
++++ b/.env.brandos.example
+@@ -0,0 +1,12 @@
++# ── Brand OS task sync ────────────────────────────────────────────────────
++# Append these lines to the real .env on the server (digihrms/.env).
++# Lets brandos_sync_helper.php push HRMS task status changes back to the new
++# Brand OS app whenever the task was created from a Brand OS deliverable
++# (tasks.brandos_deliverable_id is set — see migrate_brandos_link.php).
++#
++# BRANDOS_WEBHOOK_URL must point at Brand OS's own API, not the browser app:
++#   https://<brand-os-api-host>/webhooks/hrms-task-status
++# BRANDOS_WEBHOOK_SECRET must exactly match config('hrms.webhook_secret') in
++# Brand OS's api/config.php on that server.
++BRANDOS_WEBHOOK_URL=https://your-brandos-api-host/webhooks/hrms-task-status
++BRANDOS_WEBHOOK_SECRET=paste-the-same-value-as-brandos-config-hrms-webhook_secret
+diff --git a/api.php b/api.php
+index e398dd6..ee11c8f 100644
+--- a/api.php
++++ b/api.php
+@@ -338,8 +338,8 @@ if ($endpoint === 'tasks') {
+         $priority = strtoupper($body['priority'] ?? 'MEDIUM');
+         if (!in_array($priority, ['LOW','MEDIUM','HIGH','URGENT'])) $priority = 'MEDIUM';
+         $stmt = $conn->prepare(
+-            "INSERT INTO tasks (project_id, title, description, priority, status, due_date, assigned_to, needs_approval, created_at)
+-             VALUES (?,?,?,?,?,?,?,?,NOW())"
++            "INSERT INTO tasks (project_id, title, description, priority, status, due_date, assigned_to, needs_approval, brandos_deliverable_id, created_at)
++             VALUES (?,?,?,?,?,?,?,?,?,NOW())"
+         );
+         $stmt->execute([
+             (int)$body['project_id'],
+@@ -350,12 +350,13 @@ if ($endpoint === 'tasks') {
+             $body['due_date'] ?? null,
+             !empty($body['assigned_to']) ? (int)$body['assigned_to'] : null,
+             !empty($body['needs_approval']) ? 1 : 0,
++            !empty($body['brandos_deliverable_id']) ? (int)$body['brandos_deliverable_id'] : null,
+         ]);
+         api_ok(['id' => (int)$conn->lastInsertId(), 'message' => 'Task created.']);
+     }
+     if ($method === 'PUT') {
+         if (!$id) api_error('ID required for update.');
+-        $fields = ['title', 'description', 'priority', 'status', 'due_date', 'assigned_to', 'needs_approval'];
++        $fields = ['title', 'description', 'priority', 'status', 'due_date', 'assigned_to', 'needs_approval', 'brandos_deliverable_id'];
+         $sets = []; $params = [];
+         foreach ($fields as $f) { if (array_key_exists($f, $body)) { $sets[] = "$f = ?"; $params[] = $body[$f]; } }
+         if (!$sets) api_error('No fields to update.');
+diff --git a/brandos_sync_helper.php b/brandos_sync_helper.php
+new file mode 100644
+index 0000000..9e3f19c
+--- /dev/null
++++ b/brandos_sync_helper.php
+@@ -0,0 +1,38 @@
++<?php
++// Push an HRMS task's status change to the new Brand OS app, over HTTP, when that task was
++// created from a Brand OS deliverable (tasks.brandos_deliverable_id is set).
++//
++// This is separate from digiops_sync_helper.php, which talks to the OLD DigiOps product's
++// database directly. Brand OS is a different app on a different host, so it's called over its
++// own webhook instead — same "never break HRMS" defensiveness, just HTTP instead of a second PDO.
++function _brandos_task_sync(PDO $hrmsConn, int $hrmsTaskId, string $hrmsStatus): void {
++    $url    = $_ENV['BRANDOS_WEBHOOK_URL'] ?? '';
++    $secret = $_ENV['BRANDOS_WEBHOOK_SECRET'] ?? '';
++    if (!$url || !$secret) return; // not configured yet — silent no-op, same as digiops_db() absent
++
++    try {
++        $st = $hrmsConn->prepare('SELECT brandos_deliverable_id FROM tasks WHERE id = ?');
++        $st->execute([$hrmsTaskId]);
++        $deliverableId = $st->fetchColumn();
++        if (!$deliverableId) return; // this task didn't come from Brand OS
++
++        $payload = json_encode([
++            'secret' => $secret,
++            'deliverable_id' => (int)$deliverableId,
++            'status' => $hrmsStatus,
++        ]);
++        $ch = curl_init($url);
++        curl_setopt_array($ch, [
++            CURLOPT_CUSTOMREQUEST => 'POST',
++            CURLOPT_POSTFIELDS => $payload,
++            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
++            CURLOPT_RETURNTRANSFER => true,
++            CURLOPT_CONNECTTIMEOUT => 3,
++            CURLOPT_TIMEOUT => 5,
++        ]);
++        curl_exec($ch);
++        curl_close($ch);
++    } catch (Throwable $e) {
++        // Brand OS being down or misconfigured must never break HRMS's own status change.
++    }
++}
+diff --git a/migrate_brandos_link.php b/migrate_brandos_link.php
+new file mode 100644
+index 0000000..d687078
+--- /dev/null
++++ b/migrate_brandos_link.php
+@@ -0,0 +1,20 @@
++<?php
++// Migration: Add brandos_deliverable_id to HRMS tasks table.
++// Links an HRMS task back to the Brand OS deliverable it was created from, so status changes
++// here can be pushed back via brandos_sync_helper.php.
++// Run once: http://localhost/hrms/php_implementation/migrate_brandos_link.php
++
++require_once 'config.php';
++
++try {
++    $check = $conn->query("SHOW COLUMNS FROM tasks LIKE 'brandos_deliverable_id'")->fetch();
++    if ($check) {
++        echo "✅ Column already exists — nothing to do.";
++    } else {
++        $conn->exec("ALTER TABLE tasks ADD COLUMN brandos_deliverable_id INT DEFAULT NULL");
++        $conn->exec("CREATE INDEX idx_tasks_brandos_deliverable ON tasks (brandos_deliverable_id)");
++        echo "✅ Added brandos_deliverable_id to tasks table.";
++    }
++} catch (Exception $e) {
++    echo "❌ Error: " . $e->getMessage();
++}
+diff --git a/task_detail.php b/task_detail.php
+index 9930add..a0812ce 100644
+--- a/task_detail.php
++++ b/task_detail.php
+@@ -2,6 +2,7 @@
+ require_once 'config.php';
+ require_once 'task_timer_helper.php';
+ require_once 'digiops_sync_helper.php';
++require_once 'brandos_sync_helper.php';
+ require_login();
+ $page      = 'tasks';
+ $pageTitle = 'Task Detail';
+@@ -204,6 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+ 
+             // Sync to DigiOps
+             _digiops_task_sync($conn, $id, $_POST['new_status']);
++            _brandos_task_sync($conn, $id, $_POST['new_status']);
+         }
+         header("Location: task_detail.php?id=$id"); exit;
+     }
+diff --git a/tasks.php b/tasks.php
+index ea23825..396ede3 100644
+--- a/tasks.php
++++ b/tasks.php
+@@ -3,6 +3,7 @@ require_once 'config.php';
+ require_once 'points_helper.php';
+ require_once 'task_timer_helper.php';
+ require_once 'digiops_sync_helper.php';
++require_once 'brandos_sync_helper.php';
+ require_login();
+ $page      = 'tasks';
+ $pageTitle = 'Task Management';
+@@ -394,6 +395,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+             }
+             // Sync to DigiOps
+             _digiops_task_sync($conn, $tid, 'REVIEW');
++            _brandos_task_sync($conn, $tid, 'REVIEW');
+             if ($is_ajax) ajax_ok();
+             set_flash('success', 'Task submitted for approval. Waiting for review.');
+         }
+@@ -439,6 +441,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+             }
+             // Sync DONE to DigiOps → triggers workflow advance
+             _digiops_task_sync($conn, $tid, 'DONE');
++            _brandos_task_sync($conn, $tid, 'DONE');
+             if (!function_exists('advanceWorkflowRun')) require_once __DIR__ . '/trigger_engine.php';
+             advanceWorkflowRun($conn, $tid);
+             if ($is_ajax) ajax_ok();
+@@ -493,6 +496,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+             }
+             // Sync to DigiOps (rework = in_progress)
+             _digiops_task_sync($conn, $tid, 'REWORK');
++            _brandos_task_sync($conn, $tid, 'REWORK');
+             if ($is_ajax) ajax_ok();
+             set_flash('warning', 'Task sent back for rework.');
+         }
+@@ -593,6 +597,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+ 
+                 // Push status change to DigiOps (reverse sync)
+                 _digiops_task_sync($conn, $tid, $ns);
++                _brandos_task_sync($conn, $tid, $ns);
+ 
+                 // Award points when task marked DONE
+                 if ($ns === 'DONE' && $t_row['status'] !== 'DONE') {
+@@ -747,6 +752,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+         // Sync status to DigiOps if status changed
+         if ($field === 'status') {
+             _digiops_task_sync($conn, $tid, $value);
++            _brandos_task_sync($conn, $tid, $value);
+ 
+             // Auto-upsert approval record when needs_approval task moves to REVIEW via quick-edit
+             if ($value === 'REVIEW' && !empty($task['needs_approval'])) {
+-- 
+2.47.1.windows.2
+

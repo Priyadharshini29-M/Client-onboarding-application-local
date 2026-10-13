@@ -1,0 +1,11 @@
+node_modules/
+web/dist/
+web/vite.log
+api/config.php
+api/storage/uploads/*
+!api/storage/uploads/.gitkeep
+.DS_Store
+
+# Database backups (may contain client data)
+backups/
+api/storage/ratelimit/

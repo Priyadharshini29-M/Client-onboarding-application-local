@@ -1,0 +1,252 @@
+<title>Brand OS at a Glance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --paper:#F5F6F8; --surface:#FFFFFF; --ink:#18202E; --ink-2:#4A5468; --ink-3:#7A8397;
+  --line:#DDE1E8; --accent:#2F3E9E; --accent-soft:#E7EAFA;
+  --ok:#1D7A4C; --ok-soft:#E3F3EA; --warn:#A8670F; --warn-soft:#FBF0DD;
+  --pm:#5A6478; --pm-soft:#ECEEF2;
+  --cr:#8A3FA8; --cr-soft:#F4EBF8;
+  --sh:#B8532A; --sh-soft:#FBEDE6;
+  --di:#12807A; --di-soft:#E2F4F2;
+  --te:#1D6A9E; --te-soft:#E4F0F8;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#11151D; --surface:#181D27; --ink:#E7EAF1; --ink-2:#B1B8C8; --ink-3:#8790A3;
+    --line:#2A3140; --accent:#9AA8F5; --accent-soft:#232B4D;
+    --ok:#6CCB98; --ok-soft:#173226; --warn:#E6B366; --warn-soft:#352914;
+    --pm:#AEB6C6; --pm-soft:#242A36;
+    --cr:#D39AEE; --cr-soft:#2F2139; --sh:#F0A07E; --sh-soft:#38241B;
+    --di:#6ED3C9; --di-soft:#15312F; --te:#86C0EA; --te-soft:#172B3B;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#11151D; --surface:#181D27; --ink:#E7EAF1; --ink-2:#B1B8C8; --ink-3:#8790A3;
+  --line:#2A3140; --accent:#9AA8F5; --accent-soft:#232B4D;
+  --ok:#6CCB98; --ok-soft:#173226; --warn:#E6B366; --warn-soft:#352914;
+  --pm:#AEB6C6; --pm-soft:#242A36;
+  --cr:#D39AEE; --cr-soft:#2F2139; --sh:#F0A07E; --sh-soft:#38241B;
+  --di:#6ED3C9; --di-soft:#15312F; --te:#86C0EA; --te-soft:#172B3B;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:15.5px/1.55 var(--body);padding-inline:16px;padding-block:0 72px}
+.wrap{max-width:780px;margin:0 auto}
+.eyebrow{font:500 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+header{padding-block:48px 28px}
+h1{font:800 clamp(34px,6vw,52px)/1.02 var(--display);letter-spacing:-.03em;margin:14px 0 14px;text-wrap:balance}
+.lede{font-size:17px;color:var(--ink-2);max-width:56ch;margin:0}
+.lede a{color:var(--accent)}
+section{margin-top:56px}
+section:first-of-type{margin-top:0}
+h2{font:700 24px/1.2 var(--display);margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--ink-2);margin:0 0 20px;max-width:60ch}
+
+/* team tags */
+.team{display:inline-flex;align-items:center;gap:7px;font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:99px;white-space:nowrap}
+.team::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.t-pm{color:var(--pm);background:var(--pm-soft)}
+.t-cr{color:var(--cr);background:var(--cr-soft)}
+.t-sh{color:var(--sh);background:var(--sh-soft)}
+.t-di{color:var(--di);background:var(--di-soft)}
+.t-te{color:var(--te);background:var(--te-soft)}
+.teams-key{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+
+.gate{display:inline-flex;align-items:center;gap:8px;font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:5px 9px;border-radius:99px;white-space:nowrap}
+.gate i{width:7px;height:7px;background:var(--accent);transform:rotate(45deg);display:inline-block}
+
+/* main flow */
+.flow{list-style:none;margin:0;padding:0;position:relative}
+.flow::before{content:"";position:absolute;left:21px;top:22px;bottom:22px;width:2px;background:var(--line)}
+.flow li{position:relative;display:grid;grid-template-columns:44px 1fr;gap:16px;padding-bottom:18px}
+.flow li:last-child{padding-bottom:0}
+.num{width:44px;height:44px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);color:var(--accent);display:grid;place-items:center;font:700 16px var(--display);position:relative;z-index:1}
+.flow li:last-child .num{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card h3{margin:0;font:600 17px/1.3 var(--body)}
+.card p{margin:4px 0 0;color:var(--ink-2);font-size:14.5px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:10px;align-items:center}
+
+/* team flows */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.tabs button{font:600 14px var(--body);color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.tabs button::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
+.tabs button[aria-selected="true"]{color:var(--c);background:var(--cs);border-color:var(--c)}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tpanel{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:12px;padding:18px 18px 16px}
+.thead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;align-items:baseline;margin-bottom:14px}
+.thead h3{margin:0;font:700 21px/1.2 var(--display);color:var(--c)}
+.thead .people{font-size:13.5px;color:var(--ink-2)}
+.thead .people b{color:var(--ink);font-weight:600}
+.tsteps{list-style:none;margin:0;padding:0;counter-reset:s}
+.tsteps li{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.tsteps li:first-child{border-top:none;padding-top:0}
+.tsteps li::before{content:counter(s);width:28px;height:28px;border-radius:7px;background:var(--cs);color:var(--c);display:grid;place-items:center;font:700 13px var(--display)}
+.tsteps b{font-weight:600;font-size:15px}
+.tsteps p{margin:2px 0 0;font-size:14px;color:var(--ink-2)}
+.tsteps .gate{margin-top:7px}
+.handoff{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:14px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.handoff strong{color:var(--ink);font-weight:600;margin-right:4px}
+#p-creative{--c:var(--cr);--cs:var(--cr-soft)} #b-creative{--c:var(--cr);--cs:var(--cr-soft)}
+#p-shoot{--c:var(--sh);--cs:var(--sh-soft)} #b-shoot{--c:var(--sh);--cs:var(--sh-soft)}
+#p-digital{--c:var(--di);--cs:var(--di-soft)} #b-digital{--c:var(--di);--cs:var(--di-soft)}
+#p-tech{--c:var(--te);--cs:var(--te-soft)} #b-tech{--c:var(--te);--cs:var(--te-soft)}
+
+/* review & approval */
+.rsteps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.rsteps li{display:grid;grid-template-columns:32px 1fr;gap:14px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.rsteps .n{width:32px;height:32px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:700 15px var(--display)}
+.rsteps h3{margin:0;font:600 16px/1.3 var(--body)}
+.rsteps p{margin:3px 0 0;font-size:14.5px;color:var(--ink-2)}
+.rsteps li.down{display:block;background:none;border:none;padding:0;text-align:center;color:var(--ink-3);font-size:18px;line-height:1;margin:-4px 0}
+.fork{display:grid;gap:10px;grid-template-columns:1fr;margin-top:10px}
+@media (min-width:600px){.fork{grid-template-columns:1fr 1fr}}
+.out{border-radius:10px;padding:16px;color:var(--ink)}
+.out h3{margin:0 0 6px;font:700 18px/1.2 var(--display)}
+.out ul{margin:0;padding-left:18px;font-size:14.5px}
+.out li{margin-bottom:3px}
+.out.yes{background:var(--ok-soft)} .out.yes h3{color:var(--ok)}
+.out.no{background:var(--warn-soft)} .out.no h3{color:var(--warn)}
+
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font:700 19px/1.35 var(--display);text-wrap:balance}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Brand OS</div>
+  <h1>From client brief to launch, step by step.</h1>
+  <p class="lede">Four teams move one project forward. Every step ends with a <a href="#review">review &amp; approval</a>, so nothing moves on until the current work is signed off.</p>
+</header>
+
+<!-- MAIN FLOW -->
+<section>
+  <h2>The project flow</h2>
+  <p class="sub">The big picture. Each step is owned by one team.</p>
+  <div class="teams-key">
+    <span class="team t-pm">Project manager</span><span class="team t-cr">Creative</span><span class="team t-sh">Shoot</span><span class="team t-di">Digital</span><span class="team t-te">Tech</span>
+  </div>
+  <ol class="flow">
+    <li><div class="num">1</div><div class="card"><h3>Client Intake</h3><p>The client fills in one questionnaire covering brand, products, audience and competitors.</p><div class="meta"><span class="team t-pm">Project manager</span><span class="gate"><i></i>Approved by PM</span></div></div></li>
+    <li><div class="num">2</div><div class="card"><h3>Brand Understanding</h3><p>The answers become a structured brand profile: tone, positioning, audience, dos and don'ts.</p><div class="meta"><span class="team t-cr">Creative</span><span class="gate"><i></i>Approved by Creative Head</span></div></div></li>
+    <li><div class="num">3</div><div class="card"><h3>Branding &amp; Products</h3><p>Moodboard, logo, colors, fonts and guidelines, plus one record for each product.</p><div class="meta"><span class="team t-cr">Creative</span><span class="gate"><i></i>Approved by Creative Head</span></div></div></li>
+    <li><div class="num">4</div><div class="card"><h3>Shoot &amp; Content</h3><p>Lookbook and shot list, then the shoot, editing and final photos and videos.</p><div class="meta"><span class="team t-sh">Shoot</span><span class="gate"><i></i>Approved by Creative Head</span></div></div></li>
+    <li><div class="num">5</div><div class="card"><h3>UI / UX Design</h3><p>Sitemap, wireframes and page designs built from the approved brand and photos.</p><div class="meta"><span class="team t-di">Digital</span><span class="gate"><i></i>Approved by Creative Head</span></div></div></li>
+    <li><div class="num">6</div><div class="card"><h3>Development</h3><p>The approved designs are built into the website, for example a Shopify theme.</p><div class="meta"><span class="team t-te">Tech</span><span class="gate"><i></i>Approved by QA</span></div></div></li>
+    <li><div class="num">7</div><div class="card"><h3>Testing &amp; Brand Check</h3><p>Checks that everything works on every device and matches the brand guidelines.</p><div class="meta"><span class="team t-te">Tech</span><span class="gate"><i></i>Approved by Creative Head + PM</span></div></div></li>
+    <li><div class="num">8</div><div class="card"><h3>Launch</h3><p>A launch checklist covering domain, analytics, SEO, payments and shipping, then go live.</p><div class="meta"><span class="team t-te">Tech</span><span class="team t-di">Digital</span><span class="gate"><i></i>Approved by PM</span></div></div></li>
+    <li><div class="num">9</div><div class="card"><h3>Handoff</h3><p>The client receives every asset, file, login and guide in one organised package.</p><div class="meta"><span class="team t-pm">Project manager</span><span class="gate"><i></i>Approved by PM</span></div></div></li>
+  </ol>
+</section>
+
+<!-- TEAM FLOWS -->
+<section id="teams">
+  <h2>Inside each team</h2>
+  <p class="sub">What each team does step by step, where its work gets reviewed, and which team it hands off to.</p>
+
+  <div class="tabs" role="tablist" aria-label="Teams">
+    <button role="tab" id="b-creative" aria-controls="p-creative" aria-selected="true">Creative</button>
+    <button role="tab" id="b-shoot" aria-controls="p-shoot" aria-selected="false" tabindex="-1">Shoot</button>
+    <button role="tab" id="b-digital" aria-controls="p-digital" aria-selected="false" tabindex="-1">Digital</button>
+    <button role="tab" id="b-tech" aria-controls="p-tech" aria-selected="false" tabindex="-1">Tech</button>
+  </div>
+
+  <div class="tpanel" role="tabpanel" id="p-creative" aria-labelledby="b-creative">
+    <div class="thead"><h3>Creative team</h3><span class="people"><b>People:</b> Creative designers · <b>Approver:</b> Creative Head</span></div>
+    <ol class="tsteps">
+      <li><div><b>Read the brand profile</b><p>Start from the approved brand understanding: audience, tone, positioning.</p></div></li>
+      <li><div><b>Moodboard</b><p>Collect references for look, photography, textures and colors.</p><span class="gate"><i></i>Creative Head review</span></div></li>
+      <li><div><b>Logo concepts</b><p>2–3 concepts, each with a short rationale. The chosen one is refined.</p><span class="gate"><i></i>Creative Head review</span></div></li>
+      <li><div><b>Colors, fonts &amp; icons</b><p>Build the visual system from the approved logo.</p><span class="gate"><i></i>Creative Head review</span></div></li>
+      <li><div><b>Brand guidelines</b><p>Generated from the approved pieces, so nothing is re-typed by hand.</p><span class="gate"><i></i>Creative Head final approval</span></div></li>
+    </ol>
+    <div class="handoff"><strong>Hands off to →</strong><span class="team t-sh">Shoot</span><span class="team t-di">Digital</span><span class="team t-te">Tech</span></div>
+  </div>
+
+  <div class="tpanel" role="tabpanel" id="p-shoot" aria-labelledby="b-shoot" hidden>
+    <div class="thead"><h3>Shoot team</h3><span class="people"><b>People:</b> Photographer · Content team · <b>Approver:</b> Creative Head</span></div>
+    <ol class="tsteps">
+      <li><div><b>Shoot brief</b><p>Pull the product details and brand guidelines into one brief.</p></div></li>
+      <li><div><b>Lookbook</b><p>Mood, models, location, lighting, props and products to shoot.</p><span class="gate"><i></i>Creative Head review</span></div></li>
+      <li><div><b>Shot list</b><p>Every shot numbered: product hero, pack shots, texture, lifestyle, group.</p></div></li>
+      <li><div><b>Shoot day</b><p>Each shot is marked done as it's captured.</p></div></li>
+      <li><div><b>Editing</b><p>Retouch and export in the formats each channel needs.</p></div></li>
+      <li><div><b>Final photos &amp; videos</b><p>Reviewed shot by shot. Approved files go into the asset library.</p><span class="gate"><i></i>Creative Head final approval</span></div></li>
+    </ol>
+    <div class="handoff"><strong>Hands off to →</strong><span class="team t-di">Digital</span><span class="team t-te">Tech</span></div>
+  </div>
+
+  <div class="tpanel" role="tabpanel" id="p-digital" aria-labelledby="b-digital" hidden>
+    <div class="thead"><h3>Digital team</h3><span class="people"><b>People:</b> UI/UX designer · Content writer · <b>Approver:</b> Creative Head</span></div>
+    <ol class="tsteps">
+      <li><div><b>Website plan</b><p>Goals, pages needed and theme choice (for Shopify projects).</p></div></li>
+      <li><div><b>Sitemap &amp; wireframes</b><p>Page structure and layout, without visual design yet.</p><span class="gate"><i></i>Creative Head review</span></div></li>
+      <li><div><b>Page designs</b><p>Homepage, product and other pages using the brand and approved photos.</p><span class="gate"><i></i>Creative Head review</span></div></li>
+      <li><div><b>Mobile &amp; prototype</b><p>Responsive layouts and a clickable prototype.</p></div></li>
+      <li><div><b>Copy &amp; social templates</b><p>Website text, banners and social templates in the brand voice.</p><span class="gate"><i></i>Creative Head final approval</span></div></li>
+    </ol>
+    <div class="handoff"><strong>Hands off to →</strong><span class="team t-te">Tech</span></div>
+  </div>
+
+  <div class="tpanel" role="tabpanel" id="p-tech" aria-labelledby="b-tech" hidden>
+    <div class="thead"><h3>Tech team</h3><span class="people"><b>People:</b> Developer · QA · <b>Approvers:</b> QA, Creative Head, PM</span></div>
+    <ol class="tsteps">
+      <li><div><b>Build spec</b><p>Turn the approved designs into a clear list of what to build.</p></div></li>
+      <li><div><b>Development</b><p>Build on a development theme or staging site, never on the live store.</p></div></li>
+      <li><div><b>Testing</b><p>Functional, mobile, browser, speed and SEO checks. Each issue goes Open → Fixed → Retest → Passed.</p><span class="gate"><i></i>QA sign-off</span></div></li>
+      <li><div><b>Brand check</b><p>Logo, colors, fonts, photos and product claims match the guidelines.</p><span class="gate"><i></i>Creative Head review</span></div></li>
+      <li><div><b>Launch checklist</b><p>Domain, analytics, payments, shipping and backup are ready, then go live.</p><span class="gate"><i></i>PM final approval</span></div></li>
+    </ol>
+    <div class="handoff"><strong>Hands off to →</strong><span class="team t-pm">Project manager (handoff)</span></div>
+  </div>
+</section>
+
+<!-- REVIEW & APPROVAL -->
+<section id="review">
+  <h2>Review &amp; approval flow</h2>
+  <p class="sub">Every <span class="gate" style="vertical-align:1px"><i></i>review</span> marked above works the same way, whatever the team.</p>
+  <ol class="rsteps">
+    <li><span class="n">1</span><div><h3>Create &amp; upload</h3><p>The team member uploads the work as <b>Version 1</b>, with a short note on what it is and why.</p></div></li>
+    <li class="down" aria-hidden="true">↓</li>
+    <li><span class="n">2</span><div><h3>Team review</h3><p>Teammates comment and pin feedback directly on the design or image.</p></div></li>
+    <li class="down" aria-hidden="true">↓</li>
+    <li><span class="n">3</span><div><h3>Approver decides</h3><p>The approver for that step picks one of two outcomes.</p></div></li>
+  </ol>
+  <div class="fork">
+    <div class="out yes"><h3>✓ Approved</h3><ul><li>This version is <b>locked</b></li><li>The next step or team starts automatically</li><li>The system records who approved, which version and when</li></ul></div>
+    <div class="out no"><h3>↺ Changes requested</h3><ul><li>A new version is made (V2, V3…)</li><li>Old versions and their comments are kept</li><li>It goes back to <b>team review</b></li><li>After 3 rounds, the PM reviews scope</li></ul></div>
+  </div>
+</section>
+
+<footer>One place for every brief, file, version and approval, from intake to handoff.</footer>
+
+</div>
+
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('[role="tab"]'));
+  function show(t){
+    tabs.forEach(function(b){
+      var on=b===t;
+      b.setAttribute('aria-selected',on);
+      b.tabIndex=on?0:-1;
+      document.getElementById(b.getAttribute('aria-controls')).hidden=!on;
+    });
+  }
+  tabs.forEach(function(b,i){
+    b.addEventListener('click',function(){show(b)});
+    b.addEventListener('keydown',function(e){
+      var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;
+      if(!d)return;
+      var n=tabs[(i+d+tabs.length)%tabs.length];show(n);n.focus();
+    });
+  });
+})();
+</script>

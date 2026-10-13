@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand OS Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F5F6F8; --surface:#FFFFFF; --ink:#18202E; --ink-2:#4A5468; --ink-3:#7A8397;
+  --line:#DDE1E8; --accent:#2F3E9E; --accent-soft:#E7EAFA;
+  --ok:#1D7A4C; --ok-soft:#E3F3EA; --warn:#A8670F; --warn-soft:#FBF0DD; --bad:#B23A3A; --bad-soft:#F9E5E5;
+  --sheet:#FFFFFF; --sheet-line:#DDE1E8;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#11151D; --surface:#181D27; --ink:#E7EAF1; --ink-2:#B1B8C8; --ink-3:#8790A3;
+    --line:#2A3140; --accent:#9AA8F5; --accent-soft:#232B4D;
+    --ok:#6CCB98; --ok-soft:#173226; --warn:#E6B366; --warn-soft:#352914; --bad:#EE8E8E; --bad-soft:#3A1D1D;
+    --sheet:#F3F4F7; --sheet-line:#3A4252;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#11151D; --surface:#181D27; --ink:#E7EAF1; --ink-2:#B1B8C8; --ink-3:#8790A3;
+  --line:#2A3140; --accent:#9AA8F5; --accent-soft:#232B4D;
+  --ok:#6CCB98; --ok-soft:#173226; --warn:#E6B366; --warn-soft:#352914; --bad:#EE8E8E; --bad-soft:#3A1D1D;
+  --sheet:#F3F4F7; --sheet-line:#3A4252;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:15.5px/1.6 var(--body);padding-inline:16px;padding-block:0 64px}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:40px}
+@media (min-width:1000px){.wrap{grid-template-columns:220px minmax(0,1fr)}}
+
+/* TOC */
+nav.toc{font-size:13.5px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px}
+nav.toc a{color:var(--ink-2);text-decoration:none}
+nav.toc a:hover{color:var(--accent)}
+nav.toc .lbl{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+@media (min-width:1000px){
+  nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 32px);align-self:start;padding-top:32px}
+  nav.toc ol{flex-direction:column;gap:8px;border-left:1px solid var(--line);padding-left:14px}
+}
+
+/* header */
+header.hero{padding-top:40px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.eyebrow{font:500 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(32px,5vw,48px)/1.05 var(--display);letter-spacing:-.02em;margin:14px 0 14px;text-wrap:balance}
+.lede{font-size:18px;color:var(--ink-2);max-width:62ch;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;font:13px var(--mono);color:var(--ink-3);padding-bottom:22px}
+
+main{min-width:0}
+section{padding-top:48px}
+h2{font:700 28px/1.15 var(--display);letter-spacing:-.01em;margin:0 0 6px;text-wrap:balance}
+h2 .n{font:500 13px var(--mono);color:var(--ink-3);display:block;margin-bottom:8px;letter-spacing:.06em}
+h3{font:600 17.5px/1.3 var(--body);margin:32px 0 8px}
+p{max-width:68ch;margin:0 0 12px}
+.sub{color:var(--ink-2);max-width:66ch;margin-bottom:20px}
+code,.mono{font-family:var(--mono);font-size:.88em}
+code{background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px}
+
+/* callouts */
+.thesis{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin:22px 0}
+.thesis p{font:500 19px/1.45 var(--display);margin:0;max-width:none}
+.note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px;max-width:72ch;margin:14px 0}
+
+/* grids */
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:16px 0}
+.cell{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.cell h4{margin:0 0 6px;font:600 15px var(--body)}
+.cell p,.cell ul{font-size:14px;color:var(--ink-2);margin:0}
+.cell ul{padding-left:18px}
+.cell .k{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:6px}
+
+/* diagram sheets */
+.sheet{background:var(--sheet);border:1px solid var(--sheet-line);border-radius:10px;padding:18px;margin:14px 0 6px;overflow-x:auto}
+.sheet .diagram{margin:0;display:flex;justify-content:center;min-width:560px;color:#18202E;background:transparent;font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;white-space:pre;font-size:14px}
+.sheet .diagram[data-processed]{white-space:normal}
+.sheet .diagram svg{max-width:100%;height:auto}
+.cap{font:12.5px var(--mono);color:var(--ink-3);margin:0 0 18px}
+
+/* inline flows */
+.flow{list-style:none;padding:0;margin:10px 0 18px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.flow li{font-size:13.5px;background:var(--surface);border:1px solid var(--line);padding:5px 10px;border-radius:6px}
+.flow li+li::before{content:"→";color:var(--ink-3);margin-right:8px;margin-left:-2px}
+.flow li+li{border:none;background:none;padding:0 2px}
+.flow li+li span{background:var(--surface);border:1px solid var(--line);padding:5px 10px;border-radius:6px;display:inline-block}
+.flow li.gate span{border-color:var(--accent);color:var(--accent);font-weight:500}
+.flow li.done span{background:var(--ok-soft);border-color:transparent;color:var(--ok);font-weight:600}
+
+/* stack diagram */
+.stack{display:grid;gap:10px;margin:16px 0}
+.layer{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start}
+@media (max-width:620px){.layer{grid-template-columns:1fr;gap:6px}}
+.layer .name{font:600 14px var(--body)}
+.layer .name small{display:block;font:12px var(--mono);color:var(--ink-3);font-weight:400;margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:12.5px var(--mono);padding:3px 8px;border-radius:5px;background:var(--paper);border:1px solid var(--line);color:var(--ink-2)}
+.chip.core{background:var(--accent-soft);border-color:transparent;color:var(--accent);font-weight:500}
+.layer.core{border-color:var(--accent)}
+.down{text-align:center;color:var(--ink-3);font:12px var(--mono);line-height:1}
+
+/* tables */
+.tbl{overflow-x:auto;margin:14px 0 20px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);background:var(--paper)}
+tr:last-child td{border-bottom:none}
+td.c{text-align:center;font-variant-numeric:tabular-nums}
+.y{color:var(--ok);font-weight:600}.no{color:var(--ink-3)}
+
+/* pills */
+.pill{display:inline-block;font:500 11.5px var(--mono);padding:2px 7px;border-radius:99px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* events */
+.events{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:14px 0}
+.events div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.events b{font:600 13px var(--body);display:block;margin-bottom:6px}
+.events code{display:block;background:none;padding:1px 0;color:var(--ink-2);font-size:12.5px}
+
+/* roadmap */
+.road{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin:16px 0}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.phase.mvp{border:2px solid var(--accent)}
+.phase h4{margin:0;font:700 20px var(--display)}
+.phase .t{font:12px var(--mono);color:var(--ink-3);margin-bottom:10px}
+.phase ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink-2)}
+
+.rules{display:grid;gap:10px;margin:14px 0}
+.rule{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px}
+@media (max-width:620px){.rule{grid-template-columns:1fr}}
+.rule .w{font:500 12.5px var(--mono);color:var(--accent)}
+.rule .w::before{content:"WHEN  ";color:var(--ink-3)}
+.rule .t{color:var(--ink-2)}
+.rule .t b{font:500 11px var(--mono);color:var(--ink-3);margin-right:6px}
+
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style><style>@media print{nav.toc{display:none}.wrap{grid-template-columns:1fr!important}.sheet{break-inside:avoid}section{break-inside:auto}body{background:#fff}}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <div class="lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#workflow">1 · Project workflow</a></li>
+    <li><a href="#deliverable">2 · Deliverable lifecycle</a></li>
+    <li><a href="#architecture">3 · Software architecture</a></li>
+    <li><a href="#modules">4 · Module flows</a></li>
+    <li><a href="#crossflow">5 · Cross-module data flow</a></li>
+    <li><a href="#automation">6 · Events &amp; automation</a></li>
+    <li><a href="#ai">7 · AI &amp; RAG layer</a></li>
+    <li><a href="#data">8 · Data model</a></li>
+    <li><a href="#roles">9 · Roles &amp; permissions</a></li>
+    <li><a href="#roadmap">10 · Delivery roadmap</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero" id="overview">
+  <div class="eyebrow">Architecture report · Client Onboarding App</div>
+  <h1>Brand OS — Brand-to-Launch platform blueprint</h1>
+  <p class="lede">The workflow, software architecture and module flows for a platform that carries an agency client from first brief to final handoff, with every deliverable, version and approval connected in one system.</p>
+  <div class="meta"><span>Source: Docs/R&amp;D.md</span><span>Prepared 23 Sep 2026</span><span>Status: architecture proposal</span></div>
+</header>
+
+<section>
+  <p>The hard part of running an agency project is not task management. It is keeping briefs, assets, versions, feedback, approvals, dependencies and brand decisions connected across the whole project. Today that information is spread across email, chat and shared drives, versions get confused, and it is often unclear who approved what.</p>
+  <div class="thesis"><p>From client brief to final brand launch, every creative decision, asset, revision and approval sits in one connected workflow.</p></div>
+  <p>The platform rests on four foundations. Every other module is built around them.</p>
+  <div class="grid">
+    <div class="cell"><span class="k">Foundation 1</span><h4>Workflow engine</h4><p>Controls how the project moves through stages, including parallel work and approval gates.</p></div>
+    <div class="cell"><span class="k">Foundation 2</span><h4>Deliverable + version engine</h4><p>Controls what is being produced. Work is never overwritten; every revision is a new version.</p></div>
+    <div class="cell"><span class="k">Foundation 3</span><h4>Review + approval engine</h4><p>Controls who can approve what, and records who, what, which version, when and what decision.</p></div>
+    <div class="cell"><span class="k">Foundation 4</span><h4>Intelligence layer</h4><p>Understands how brand, product, assets and project data relate. It sits on top of the system, not underneath it.</p></div>
+  </div>
+</section>
+
+<!-- 1 WORKFLOW -->
+<section id="workflow">
+  <h2><span class="n">01</span>Project workflow</h2>
+  <p class="sub">The original workflow was a straight line. Real agency work runs in parallel. Once Brand KT is approved, branding, product and website strategy can start at the same time, and UI/UX and content can run side by side after the shoot. The backend has to model stages as a dependency graph, not a checklist.</p>
+  <div class="sheet"><div class="diagram">
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#E7EAFA","primaryBorderColor":"#2F3E9E","primaryTextColor":"#18202E","lineColor":"#7A8397","fontFamily":"IBM Plex Sans, Segoe UI, sans-serif","fontSize":"14px"}}}%%
+flowchart TD
+  classDef default fill:#E7EAFA,stroke:#2F3E9E,color:#18202E;
+  C(["Client"]) --> I["Client Intake Portal"]
+  I --> KT["Brand KT · Brand Intelligence"]
+  KT --> BR["Branding · Brand Studio"]
+  KT --> PR["Products · Product KT"]
+  KT --> ST["Website Strategy"]
+  BR --> SH["Shoot &amp; Content"]
+  PR --> SH
+  ST --> SH
+  SH --> UX["UI / UX"]
+  SH --> CO["Content"]
+  UX --> DEV["Development"]
+  CO --> DEV
+  DEV --> QA["QA"]
+  QA --> BQA["Brand QA"]
+  BQA --> L["Launch"]
+  L --> H["Final Handoff"]
+  H --> A(["Archive"])
+  classDef gate fill:#FFFFFF,stroke:#2F3E9E,stroke-width:2px;
+  class KT,BQA gate;
+  </div></div>
+  <p class="cap">Fig 1 · End-to-end lifecycle with parallel stages. Each arrow is a dependency; a stage opens only when the stages it depends on are approved.</p>
+
+  <h3>Stages, outputs and gates</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Stage</th><th>Key deliverables</th><th>Approval gate</th><th>Feeds into</th></tr></thead>
+    <tbody>
+      <tr><td><b>Client Intake</b></td><td>Brand, products, audience, competitors, website, content and asset questionnaire</td><td>Client submits</td><td>Brand KT</td></tr>
+      <tr><td><b>Brand KT</b></td><td>Structured brand profile, AI brand summary</td><td>Creative team confirms AI output</td><td>Branding, Products, Strategy</td></tr>
+      <tr><td><b>Branding</b></td><td>Moodboard, logo, color system, typography, iconography, photography style, voice, generated guidelines</td><td>Creative Head, then Client</td><td>Shoot, UI/UX, Brand QA</td></tr>
+      <tr><td><b>Products</b></td><td>Catalog (categories, collections, SKUs, variants), Product KT record per product</td><td>Client confirms facts</td><td>Shoot, Website, Content, Ads</td></tr>
+      <tr><td><b>Shoot &amp; Content</b></td><td>Shoot brief, lookbook, shot list, edited assets</td><td>Creative Head approves lookbook; Client approves assets</td><td>UI/UX, Content, Handoff</td></tr>
+      <tr><td><b>UI / UX</b></td><td>Sitemap, user flows, wireframes, UI, responsive, prototype, design system, theme choice</td><td>Creative Head, then Client</td><td>Development</td></tr>
+      <tr><td><b>Development</b></td><td>Dev spec, dev theme, staging build</td><td>QA, then Client</td><td>QA</td></tr>
+      <tr><td><b>QA + Brand QA</b></td><td>Functional, visual, responsive, browser, performance, accessibility, content, SEO, Shopify and brand checks</td><td>All blocking issues passed</td><td>Launch</td></tr>
+      <tr><td><b>Launch</b></td><td>Pre-launch checklist, readiness score</td><td>PM and Client</td><td>Handoff</td></tr>
+      <tr><td><b>Handoff</b></td><td>Asset packages, source files, credentials, documentation, training</td><td>Client final sign-off</td><td>Archive</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Workflow templates</h3>
+  <p>A new project starts with one question: <em>what are you building?</em> The answer (new brand, rebrand, Shopify website, website, product shoot, campaign, content or custom) picks a template that creates the stages automatically.</p>
+  <div class="grid">
+    <div class="cell"><h4>Shopify website</h4><ul class="flow" style="margin:6px 0 0"><li>Brand KT</li><li><span>Branding</span></li><li><span>Product</span></li><li><span>Shoot</span></li><li><span>UI/UX</span></li><li><span>Shopify dev</span></li><li><span>QA</span></li><li><span>Brand QA</span></li><li><span>Launch</span></li><li><span>Handoff</span></li></ul></div>
+    <div class="cell"><h4>Branding only</h4><ul class="flow" style="margin:6px 0 0"><li>Brand KT</li><li><span>Moodboard</span></li><li><span>Logo</span></li><li><span>Color</span></li><li><span>Typography</span></li><li><span>Guidelines</span></li><li><span>Handoff</span></li></ul></div>
+    <div class="cell"><h4>Product shoot</h4><ul class="flow" style="margin:6px 0 0"><li>Product KT</li><li><span>Direction</span></li><li><span>Lookbook</span></li><li><span>Approval</span></li><li><span>Shoot</span></li><li><span>Editing</span></li><li><span>QA</span></li><li><span>Delivery</span></li></ul></div>
+  </div>
+</section>
+
+<!-- 2 DELIVERABLE -->
+<section id="deliverable">
+  <h2><span class="n">02</span>Deliverable lifecycle</h2>
+  <p class="sub">The deliverable is the central object of the application. A logo, a moodboard, a homepage design, a product photo set, a QA report: each is a deliverable with a brief, owner, reviewer, approver, files, versions, comments, dependencies, due date, revision count and audit history. Work does not go from <code>Task → Done</code>. It moves through an explicit state machine.</p>
+  <div class="sheet"><div class="diagram">
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#E7EAFA","primaryBorderColor":"#2F3E9E","primaryTextColor":"#18202E","lineColor":"#7A8397","fontFamily":"IBM Plex Sans, Segoe UI, sans-serif","fontSize":"13px"}}}%%
+stateDiagram-v2
+  direction LR
+  [*] --> DRAFT
+  DRAFT --> INTERNAL_REVIEW: Designer submits
+  INTERNAL_REVIEW --> REVISION: Internal changes
+  INTERNAL_REVIEW --> READY_FOR_CLIENT: Creative Head approves
+  READY_FOR_CLIENT --> CLIENT_REVIEW: Shared with client
+  CLIENT_REVIEW --> CHANGES_REQUESTED: Client requests changes
+  CHANGES_REQUESTED --> REVISION
+  REVISION --> INTERNAL_REVIEW: New version created
+  CLIENT_REVIEW --> APPROVED: Client approves
+  APPROVED --> LOCKED: PM locks
+  LOCKED --> DELIVERED
+  DELIVERED --> [*]
+  </div></div>
+  <p class="cap">Fig 2 · Deliverable state machine. A revision always creates a new version (V1 → V2), and the new version gets its own review. Earlier versions are kept along with their reviewers, comments, timestamps and approval status.</p>
+
+  <h3>Who can move a deliverable</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Role</th><th>Allowed transition</th></tr></thead>
+    <tbody>
+      <tr><td>Designer</td><td><span class="pill">DRAFT</span> → <span class="pill">INTERNAL_REVIEW</span></td></tr>
+      <tr><td>Creative Head</td><td><span class="pill">INTERNAL_REVIEW</span> → <span class="pill">READY_FOR_CLIENT</span> or <span class="pill warn">REVISION</span></td></tr>
+      <tr><td>Client Admin / Reviewer</td><td><span class="pill">CLIENT_REVIEW</span> → <span class="pill ok">APPROVED</span> or <span class="pill warn">CHANGES_REQUESTED</span></td></tr>
+      <tr><td>Project Manager</td><td><span class="pill ok">APPROVED</span> → <span class="pill ok">LOCKED</span></td></tr>
+    </tbody>
+  </table></div>
+  <p>Nobody can jump states unless their role allows that transition.</p>
+
+  <h3>Decisions, not just "approved / rejected"</h3>
+  <div class="grid">
+    <div class="cell"><span class="k">Internal review</span><p>Approve for Client · Request Changes · Block</p></div>
+    <div class="cell"><span class="k">Client review</span><p>Approve · Request Changes · Comment</p></div>
+    <div class="cell"><span class="k">Final sign-off</span><p>Approved for Production</p></div>
+  </div>
+
+  <h3>What every approval records</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Who</th><th>What</th><th>Which version</th><th>When</th><th>Decision</th></tr></thead>
+    <tbody><tr><td>Client Admin</td><td>Homepage</td><td>V4</td><td>23 Sep 2026</td><td><span class="pill ok">Approved for Development</span></td></tr></tbody>
+  </table></div>
+  <p>This record is the project's legal and operational audit trail. Approvals must happen inside the platform. A "👍" on WhatsApp does not count unless an authenticated WhatsApp approval flow is deliberately built.</p>
+
+  <h3>Revision limits</h3>
+  <p>Each deliverable tracks its revision rounds against the contract (for example <span class="mono">2 / 3 used</span>). When the limit is reached, a further request goes to the PM as a scope change instead of another free loop.</p>
+  <ul class="flow"><li>Extra revision requested</li><li class="gate"><span>Scope change</span></li><li><span>PM review</span></li><li><span>Approved as paid change, or declined</span></li></ul>
+
+  <div class="note"><b>Status is not approval.</b> A deliverable can be technically complete but not yet approved. Track production status (for example "Development: Completed") separately from approval status (for example "Approval: Waiting for Client").</div>
+</section>
+
+<!-- 3 ARCHITECTURE -->
+<section id="architecture">
+  <h2><span class="n">03</span>Software architecture</h2>
+  <p class="sub">Start as a <b>modular monolith</b>: one deployable backend with clearly separated modules. That is much easier to build and run than microservices, and modules can be split out later if scale requires it.</p>
+
+  <div class="stack" role="img" aria-label="Layered architecture from users down to AI layer">
+    <div class="layer"><div class="name">Users<small>two audiences</small></div><div class="chips"><span class="chip">Agency Admin</span><span class="chip">Creative Head</span><span class="chip">PM</span><span class="chip">Designer</span><span class="chip">UI/UX</span><span class="chip">Developer</span><span class="chip">QA</span><span class="chip">Photographer</span><span class="chip">Content</span><span class="chip">Client Admin</span><span class="chip">Client Reviewer</span><span class="chip">Client Viewer</span></div></div>
+    <div class="down">▼</div>
+    <div class="layer"><div class="name">Web application<small>Next.js · React · TS</small></div><div class="chips"><span class="chip">Agency workspace</span><span class="chip">Client portal</span><span class="chip">Visual annotation</span><span class="chip">Realtime via WebSockets / SSE</span></div></div>
+    <div class="down">▼ REST / JSON · JWT / OAuth</div>
+    <div class="layer core"><div class="name">Application API<small>FastAPI or NestJS · modular monolith</small></div>
+      <div style="display:grid;gap:10px">
+        <div class="chips"><span class="chip core">Workflow engine</span><span class="chip core">Deliverable + Version</span><span class="chip core">Review + Approval</span><span class="chip core">Task + Dependency</span></div>
+        <div class="chips"><span class="chip">Organization / Client</span><span class="chip">Project</span><span class="chip">Brand</span><span class="chip">Product</span><span class="chip">Asset</span><span class="chip">Shoot / Content</span><span class="chip">UI/UX</span><span class="chip">Development</span><span class="chip">QA + Brand QA</span><span class="chip">Launch + Handoff</span></div>
+        <div class="chips"><span class="chip">Auth + RBAC</span><span class="chip">Notification</span><span class="chip">Automation</span><span class="chip">Integration</span><span class="chip">Audit / Activity</span><span class="chip">AI service</span></div>
+      </div></div>
+    <div class="down">▼</div>
+    <div class="layer"><div class="name">Data &amp; jobs</div><div class="chips"><span class="chip">PostgreSQL · core data &amp; relations</span><span class="chip">Object storage (S3 / Supabase) · files</span><span class="chip">Redis · cache, queues, events</span><span class="chip">Workers · Celery / BullMQ</span></div></div>
+    <div class="down">▼</div>
+    <div class="layer"><div class="name">Intelligence<small>added in V3</small></div><div class="chips"><span class="chip">Qdrant vector DB</span><span class="chip">Brand · Product · Project · Creative RAG</span><span class="chip">LLM API + embeddings</span><span class="chip">Validation layer</span></div></div>
+    <div class="down">⇅</div>
+    <div class="layer"><div class="name">Integrations<small>added in V4</small></div><div class="chips"><span class="chip">Figma</span><span class="chip">Shopify</span><span class="chip">GitHub</span><span class="chip">Google Drive</span><span class="chip">Slack</span><span class="chip">Email</span><span class="chip">WhatsApp</span><span class="chip">Meta</span><span class="chip">Analytics</span></div></div>
+  </div>
+  <p class="cap">Fig 3 · Layered architecture. Highlighted chips are the core engines. Integrations feed the platform; they never become a separate source of truth.</p>
+
+  <h3>Recommended stack</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Concern</th><th>Choice</th><th>Holds / does</th></tr></thead>
+    <tbody>
+      <tr><td>Frontend</td><td>Next.js + React, TypeScript, Tailwind (optional)</td><td>Agency workspace and client portal</td></tr>
+      <tr><td>Backend</td><td>FastAPI (preferred for a Python-heavy AI path) or Node / NestJS</td><td>Modular monolith API</td></tr>
+      <tr><td>Database</td><td>PostgreSQL</td><td>Users, projects, clients, tasks, deliverables, versions, approvals, metadata</td></tr>
+      <tr><td>Object storage</td><td>S3-compatible / Supabase Storage</td><td>Images, videos, PDFs, ZIPs, design exports, brand assets</td></tr>
+      <tr><td>Cache / queue</td><td>Redis + Celery / RQ / BullMQ</td><td>Queues, notifications, caching, AI jobs, automation events</td></tr>
+      <tr><td>Vector DB</td><td>Qdrant</td><td>Brand, product, creative and project knowledge</td></tr>
+      <tr><td>Search</td><td>PostgreSQL full text + vector search</td><td>Asset and knowledge lookup</td></tr>
+      <tr><td>Auth</td><td>JWT / OAuth, role-based access control</td><td>Agency and client roles, internal vs client visibility</td></tr>
+      <tr><td>Realtime</td><td>WebSockets / SSE</td><td>Live comments, approvals, notifications</td></tr>
+      <tr><td>Monitoring</td><td>Sentry + application logs</td><td>Errors and tracing</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Navigation architecture</h3>
+  <p>The backend is broad, but the UI stays simple. The sidebar does not expose all ten stages.</p>
+  <div class="grid">
+    <div class="cell"><span class="k">Main sidebar</span><p>Dashboard · Projects · Clients · Assets · Approvals · QA · Automations · AI · Settings</p></div>
+    <div class="cell"><span class="k">Inside a project</span><p>Overview · Brand · Products · Shoot · Design · Development · QA · Launch · Handoff</p></div>
+    <div class="cell"><span class="k">Client portal</span><p>Project progress · My approvals · Deliverables · Feedback · Brand · Assets · Handoff</p></div>
+  </div>
+  <p>The client never sees developer tasks, internal comments, team discussion or technical tickets. Internal and client comments are stored as separate channels and must never mix.</p>
+</section>
+
+<!-- 4 MODULES -->
+<section id="modules">
+  <h2><span class="n">04</span>Module flows</h2>
+  <p class="sub">The product is organised into six user-facing areas. Each module below lists what it holds and the flow its main deliverables follow. Outlined steps are approval gates; green steps are the locked outcome.</p>
+
+  <div class="grid">
+    <div class="cell"><span class="k">Area 01</span><h4>Workspace</h4><p>Dashboard, clients, projects, calendar, team, notifications, activity</p></div>
+    <div class="cell"><span class="k">Area 02</span><h4>Brand &amp; Product</h4><p>Brand KT, identity, voice, guidelines, competitors, audience, catalog, Product KT</p></div>
+    <div class="cell"><span class="k">Area 03</span><h4>Production</h4><p>Creative, shoot, content, UI/UX</p></div>
+    <div class="cell"><span class="k">Area 04</span><h4>Review &amp; Approval</h4><p>Versions, visual feedback, approvals, revision limits</p></div>
+    <div class="cell"><span class="k">Area 05</span><h4>QA, Launch &amp; Handoff</h4><p>QA center, Brand QA, launch readiness, handoff center</p></div>
+    <div class="cell"><span class="k">Area 06</span><h4>Intelligence &amp; Automation</h4><p>AI engines, project assistant, automation rules, insights</p></div>
+  </div>
+
+  <h3>Workspace · dashboards</h3>
+  <p>The agency project dashboard answers five questions at a glance: where are we (stage and %), what is blocked, what needs my attention, what happens next, and are we on schedule (for example Day 27 / 45, on track). Every screen shows a <b>Next action</b> with who it is waiting on, so no one has to ask "what do I do next?". The client dashboard shows only stage progress and a short list of items that need their approval.</p>
+
+  <h3>Client Intake</h3>
+  <p>A guided portal replaces collecting information over WhatsApp and email. Seven sections: Brand, Products, Audience, Competitors, Website, Content, Assets. It covers basic details, business model, pricing, distribution, primary and secondary audience, pain points, direct and indirect competitors, and positioning (what makes the brand different, what customers should feel, what the brand must never say).</p>
+  <ul class="flow"><li>Client invited</li><li><span>Questionnaire</span></li><li><span>Asset upload</span></li><li class="gate"><span>Submit</span></li><li><span>Event: brand.submitted</span></li></ul>
+
+  <h3>Brand KT · Brand Intelligence</h3>
+  <p>Brand KT is stored as structured knowledge, not one large document: identity, positioning, audience, competitors, products, pricing, tone, visual language, messaging, keywords, forbidden terms, brand rules and references. AI drafts a brand summary (position, audience, tone, visual direction, what to avoid). A person must confirm it; AI never sets brand rules on its own.</p>
+  <ul class="flow"><li>Client input</li><li><span>AI processing</span></li><li><span>Structured brand profile</span></li><li class="gate"><span>Creative team review</span></li><li class="done"><span>Approved brand knowledge</span></li></ul>
+
+  <h3>Branding · Brand Studio</h3>
+  <p>Moodboard, logo, color system, typography, iconography, photography style, graphic language, voice &amp; tone, brand guidelines.</p>
+  <div class="grid">
+    <div class="cell"><span class="k">Moodboard</span><ul class="flow" style="margin:4px 0 8px"><li>Moodboard V1</li><li class="gate"><span>Creative review</span></li><li class="gate"><span>Creative Head</span></li><li class="gate"><span>Client</span></li></ul><p>Clients click on an image to leave pinned comments (●1 "Love this photography direction", ●2 "Can we make this less dark?"). Pins stay attached to that exact version.</p></div>
+    <div class="cell"><span class="k">Logo</span><ul class="flow" style="margin:4px 0 8px"><li>Concepts 01–03</li><li class="gate"><span>Internal</span></li><li class="gate"><span>Creative Head</span></li><li class="gate"><span>Client</span></li><li class="done"><span>Final logo</span></li></ul><p>Each concept carries a preview, description, design rationale, files, comments, versions and status.</p></div>
+    <div class="cell"><span class="k">Guidelines</span><ul class="flow" style="margin:4px 0 8px"><li>Approved logo, colors, type, icons, photography, tone</li><li><span>Auto-generated style guide</span></li><li class="gate"><span>Creative Head</span></li></ul><p>Guidelines are generated from approved assets, never written from scratch. Sections: story, logo (clear space, don'ts), colors (HEX / RGB / CMYK), typography, iconography, photography, graphic elements, voice, do/don't, digital applications.</p></div>
+  </div>
+
+  <h3>Product Hub · Product KT</h3>
+  <p>The catalog holds categories, collections, product groups and products. Each product has info, SKU, variants, pricing, inventory, images and videos. Each product also gets a knowledge record: benefits, target customer, key ingredients, approved claims, restrictions, visual direction and shoot requirements. It is the one authoritative record, entered once and reused by shoot, website, marketing, content, ads, email and packaging.</p>
+  <ul class="flow"><li>Product record</li><li><span>Shoot</span></li><li><span>Website</span></li><li><span>Marketing</span></li><li><span>Content</span></li><li><span>Ads</span></li></ul>
+
+  <h3>Shoot &amp; Content · Production Studio</h3>
+  <p>Covers product, model, video and lifestyle shoots, UGC and content. The lookbook sets campaign, mood, models, location, background, lighting, props and products.</p>
+  <ul class="flow"><li>Product</li><li><span>Shoot brief</span></li><li><span>Lookbook</span></li><li class="gate"><span>Creative Head approval</span></li><li><span>Shot list</span></li><li><span>Shoot</span></li><li><span>Editing</span></li><li class="gate"><span>Review</span></li><li class="done"><span>Final assets</span></li></ul>
+  <p>Every shot is tracked (shot ID, product, reference, model, location, props, orientation, output format, owner, status):</p>
+  <ul class="flow"><li>Planned</li><li><span>Shot</span></li><li><span>Editing</span></li><li class="gate"><span>Internal review</span></li><li class="done"><span>Approved</span></li></ul>
+
+  <h3>UI / UX · Digital Experience</h3>
+  <p>Website strategy, sitemap, user flows, wireframes, UI design, responsive design, prototype and design system.</p>
+  <ul class="flow"><li>Requirement</li><li><span>Wireframe</span></li><li><span>UI</span></li><li class="gate"><span>Internal review</span></li><li class="gate"><span>Creative Head</span></li><li class="gate"><span>Client review</span></li><li><span>Revision</span></li><li class="done"><span>Client approval</span></li><li><span>Development</span></li></ul>
+  <p>For Shopify projects the theme is chosen inside this module:</p>
+  <ul class="flow"><li>Website requirement</li><li><span>Theme recommendation</span></li><li><span>Theme preview</span></li><li class="gate"><span>Client selection</span></li><li><span>Customisation</span></li></ul>
+
+  <h3>Development</h3>
+  <p>Development uses approved creative decisions as its input. It is not another Jira clone.</p>
+  <ul class="flow"><li>Approved design</li><li><span>Dev spec</span></li><li><span>Dev</span></li><li><span>Staging</span></li><li class="gate"><span>QA</span></li><li class="gate"><span>Client review</span></li><li class="done"><span>Production</span></li></ul>
+  <ul class="flow"><li>Shopify store</li><li><span>Dev theme</span></li><li><span>Development</span></li><li><span>Preview</span></li><li class="gate"><span>QA</span></li><li class="gate"><span>Client approval</span></li><li class="done"><span>Live theme</span></li></ul>
+
+  <h3>QA Center</h3>
+  <p>Functional, visual, responsive, browser, performance, accessibility, content, SEO, Shopify and brand QA. Each issue records page, type, severity, description, screenshot, environment, assignee, status, comments and resolution.</p>
+  <ul class="flow"><li>Open</li><li><span>Assigned</span></li><li><span>In progress</span></li><li><span>Fixed</span></li><li class="gate"><span>Retest</span></li><li class="done"><span>Passed</span></li></ul>
+
+  <h3>Brand QA</h3>
+  <p>Compares the actual output with approved brand rules: correct logo and proportions, approved palette only, approved fonts and hierarchy, photography style, tone, product claims and overall consistency. AI can check automatically, for example "⚠ Heading font mismatch: expected Playfair Display, found Georgia" or "⚠ Claim '100% chemical free' is not in approved claims".</p>
+  <ul class="flow"><li>AI detected</li><li class="gate"><span>Human review</span></li><li><span>Confirm</span></li><li class="done"><span>Resolve</span></li></ul>
+  <p>AI findings do not block launch unless a hard rule has been deliberately configured.</p>
+
+  <h3>Launch Center</h3>
+  <p>Pre-launch checklist covering domain, hosting, analytics, pixel and tracking, SEO, forms, email, payments, shipping, product, inventory, mobile, performance and backup. It rolls up into a launch readiness score (for example 87%, with branding, UI, development and QA passed, and analytics and SEO metadata still flagged).</p>
+
+  <h3>Handoff Center</h3>
+  <p>Organised packages instead of a Drive folder: brand assets, logo package, guidelines, product assets, photography, videos, website assets, source files, credentials, documentation and training.</p>
+  <ul class="flow"><li>Handoff package</li><li><span>Guided walkthrough</span></li><li class="gate"><span>Client confirms: assets, website, docs, training, no open issues</span></li><li class="done"><span>Final sign-off · Completed</span></li></ul>
+</section>
+
+<!-- 5 CROSS FLOW -->
+<section id="crossflow">
+  <h2><span class="n">05</span>Cross-module data flow</h2>
+  <p class="sub">Internally, the modules share one chain of objects. This is the most important diagram in the report.</p>
+  <div class="sheet"><div class="diagram">
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#E7EAFA","primaryBorderColor":"#2F3E9E","primaryTextColor":"#18202E","lineColor":"#7A8397","fontFamily":"IBM Plex Sans, Segoe UI, sans-serif","fontSize":"14px"}}}%%
+flowchart TD
+  classDef default fill:#E7EAFA,stroke:#2F3E9E,color:#18202E;
+  P["PROJECT"] --> B["BRAND"]
+  P --> PR["PRODUCT"]
+  P --> T["TEAM"]
+  B --> D["DELIVERABLE"]
+  PR --> D
+  D --> V["VERSION"]
+  V --> R["REVIEW"]
+  R --> F["FEEDBACK"]
+  R --> AP["APPROVAL"]
+  F --> RV["REVISION"]
+  RV -.new version.-> V
+  AP --> LK["LOCK"]
+  LK --> DEP["DEPENDENCY CHECK"]
+  DEP --> NS["NEXT STAGE"]
+  NS --> QA["QA"] --> LA["LAUNCH"] --> HO["HANDOFF"]
+  classDef lock fill:#E3F3EA,stroke:#1D7A4C,color:#18202E;
+  class LK lock;
+  </div></div>
+  <p class="cap">Fig 4 · Central object model. Deliverables, versions, reviews, approvals, dependencies, notifications, audit logs, automations and AI are cross-cutting: every stage uses them.</p>
+
+  <h3>Dependency engine · project intelligence graph</h3>
+  <p>The project is stored as a graph of approved assets and the deliverables that use them. When an approved asset changes, the system can say exactly what needs review again.</p>
+  <div class="sheet"><div class="diagram">
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#E7EAFA","primaryBorderColor":"#2F3E9E","primaryTextColor":"#18202E","lineColor":"#7A8397","fontFamily":"IBM Plex Sans, Segoe UI, sans-serif","fontSize":"14px"}}}%%
+flowchart TD
+  classDef default fill:#E7EAFA,stroke:#2F3E9E,color:#18202E;
+  BR["Brand"] --> LG["Logo"]
+  BR --> COL["Colors #A23B3B → #8B2F2F"]
+  BR --> TY["Typography"]
+  LG --> DS["Design system"]
+  COL --> DS
+  TY --> DS
+  DS --> WEB["Website / Homepage"]
+  DS --> CON["Content"]
+  WEB --> PP["Product page"]
+  PP --> DEV["Development"]
+  DEV --> QA["QA"]
+  QA --> LA["Launch"]
+  CON --> SO["Social / Instagram template"]
+  CON --> EM["Email template"]
+  CON --> BN["Banner"]
+  classDef changed fill:#FBF0DD,stroke:#A8670F,stroke-width:2px,color:#18202E;
+  classDef hit fill:#F9E5E5,stroke:#B23A3A,color:#18202E;
+  class COL changed;
+  class DS,WEB,PP,DEV,QA,SO,EM,BN hit;
+  </div></div>
+  <p class="cap">Fig 5 · Impact of a brand color change. Amber: the changed asset. Red: deliverables flagged for re-review.</p>
+  <div class="note">⚠ This approved brand asset is used by 7 deliverables: Homepage, Product Page, Instagram Template, Email Template, Website Theme, Banner, Packaging. Normal project tools treat these as separate tasks. This system knows they are connected.</div>
+</section>
+
+<!-- 6 AUTOMATION -->
+<section id="automation">
+  <h2><span class="n">06</span>Events &amp; automation</h2>
+  <p class="sub">Every important action emits a domain event onto the Redis queue. The automation engine listens, checks conditions and runs actions. Notifications, progress updates and next-stage creation all come from the same event stream.</p>
+  <div class="sheet"><div class="diagram">
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#E7EAFA","primaryBorderColor":"#2F3E9E","primaryTextColor":"#18202E","lineColor":"#7A8397","fontFamily":"IBM Plex Sans, Segoe UI, sans-serif","fontSize":"14px"}}}%%
+flowchart LR
+  classDef default fill:#E7EAFA,stroke:#2F3E9E,color:#18202E;
+  E["Event&lt;br&gt;approval.approved"] --> T["Trigger engine"]
+  T --> C{"Condition&lt;br&gt;type == homepage?"}
+  C -->|yes| A["Actions&lt;br&gt;create next stage&lt;br&gt;assign owner&lt;br&gt;notify&lt;br&gt;update progress"]
+  C -->|no| N["No-op"]
+  A --> AU["Audit log"]
+  </div></div>
+  <p class="cap">Fig 6 · Event → Trigger → Condition → Action.</p>
+
+  <h3>Event catalogue</h3>
+  <div class="events">
+    <div><b>Project &amp; brand</b><code>project.created</code><code>brand.submitted</code><code>brand.approved</code></div>
+    <div><b>Deliverables</b><code>deliverable.created</code><code>deliverable.uploaded</code><code>deliverable.version_created</code></div>
+    <div><b>Review &amp; approval</b><code>review.started</code><code>feedback.created</code><code>approval.requested</code><code>approval.approved</code><code>approval.changes_requested</code></div>
+    <div><b>QA, launch, handoff</b><code>qa.created</code><code>qa.failed</code><code>qa.passed</code><code>launch.started</code><code>launch.approved</code><code>handoff.started</code><code>handoff.completed</code></div>
+  </div>
+
+  <h3>Starter automation rules</h3>
+  <div class="rules">
+    <div class="rule"><div class="w">Brand Guidelines approved</div><div class="t"><b>THEN</b>Create Website Design, Shoot Lookbook and Social Template tasks</div></div>
+    <div class="rule"><div class="w">Homepage Design approved</div><div class="t"><b>THEN</b>Create Development task and assign developer</div></div>
+    <div class="rule"><div class="w">Website Development completed</div><div class="t"><b>THEN</b>Create QA task, Brand QA task and Client Review</div></div>
+    <div class="rule"><div class="w">website.qa_failed</div><div class="t"><b>THEN</b>Notify developer, create bug, reopen development</div></div>
+    <div class="rule"><div class="w">QA passed</div><div class="t"><b>THEN</b>Create Launch Checklist</div></div>
+    <div class="rule"><div class="w">Client approves website</div><div class="t"><b>THEN</b>Create Final Testing, Launch Checklist and Handoff Package</div></div>
+  </div>
+
+  <h3>Action notifications</h3>
+  <p>Notifications describe the action needed, not just that something happened. They go out in the app, by email and (later) on WhatsApp, but the approval itself always happens in the platform.</p>
+  <div class="grid">
+    <div class="cell"><span class="pill bad">Action required</span><p style="margin-top:8px">Homepage V2 is waiting for your approval.</p></div>
+    <div class="cell"><span class="pill warn">Review</span><p style="margin-top:8px">Creative Head needs to review Product Shoot Lookbook V3.</p></div>
+    <div class="cell"><span class="pill ok">Approved</span><p style="margin-top:8px">Brand Guidelines V4 approved by client.</p></div>
+    <div class="cell"><span class="pill">Blocked</span><p style="margin-top:8px">Development cannot begin because Homepage UI is not approved.</p></div>
+  </div>
+</section>
+
+<!-- 7 AI -->
+<section id="ai">
+  <h2><span class="n">07</span>AI &amp; RAG layer</h2>
+  <p class="sub">AI sits on top of reliable workflow data. It understands the project; it is not the project. Every AI output goes through the same governance as human work, and a person can always accept, edit, reject or regenerate it.</p>
+  <div class="grid">
+    <div class="cell"><span class="k">Brand AI</span><p>Understands brand, tone, positioning, visual identity, guidelines, audience</p></div>
+    <div class="cell"><span class="k">Creative AI</span><p>Drafts moodboards, concepts, copy, creative directions, shot concepts</p></div>
+    <div class="cell"><span class="k">Product AI</span><p>Understands products, SKUs, benefits, pricing, inventory, categories</p></div>
+    <div class="cell"><span class="k">QA AI</span><p>Checks brand compliance, content, visual consistency, product accuracy</p></div>
+    <div class="cell"><span class="k">Automation AI</span><p>Suggests next action, missing dependency, blocked stage, required approval</p></div>
+  </div>
+
+  <div class="sheet"><div class="diagram">
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#E7EAFA","primaryBorderColor":"#2F3E9E","primaryTextColor":"#18202E","lineColor":"#7A8397","fontFamily":"IBM Plex Sans, Segoe UI, sans-serif","fontSize":"14px"}}}%%
+flowchart TD
+  classDef default fill:#E7EAFA,stroke:#2F3E9E,color:#18202E;
+  Q["User request&lt;br&gt;'Create 3 homepage hero concepts'"] --> IR["Intent router"]
+  IR --> B["Brand RAG"]
+  IR --> P["Product RAG"]
+  IR --> PJ["Project RAG"]
+  IR --> CR["Approved creative RAG"]
+  B --> F["Context fusion"]
+  P --> F
+  PJ --> F
+  CR --> F
+  F --> M["LLM"]
+  M --> V1["Brand validation"]
+  V1 --> V2["Fact validator&lt;br&gt;vs Product / Brand / Project DB"]
+  V2 --> V3["Similarity check"]
+  V3 -->|pass| S["Concepts shown to user"]
+  V3 -->|flag| X["Flagged for human review"]
+  S -->|chosen| D["Deliverable V1&lt;br&gt;enters normal approval workflow"]
+  </div></div>
+  <p class="cap">Fig 7 · Retrieval-augmented generation with validation. Product data is authoritative: if the price is ₹899, AI must never write ₹799.</p>
+
+  <h3>Knowledge collections (Qdrant)</h3>
+  <div class="chips" style="margin:8px 0 16px"><span class="chip">brand_knowledge</span><span class="chip">product_knowledge</span><span class="chip">competitor_knowledge</span><span class="chip">creative_knowledge</span><span class="chip">project_knowledge</span><span class="chip">approval_knowledge</span><span class="chip">website_knowledge</span><span class="chip">qa_knowledge</span></div>
+
+  <h3>Project assistant</h3>
+  <p>"Ask Project AI" answers questions from the workflow and dependency data, not general chat:</p>
+  <div class="grid">
+    <div class="cell"><span class="k">What is blocking this project?</span><p>1. Product shoot not approved<br>2. Homepage copy awaiting client feedback</p></div>
+    <div class="cell"><span class="k">What needs approval today?</span><p>Moodboard V2 · Homepage V3 · Product Shoot V1</p></div>
+    <div class="cell"><span class="k">Why can't development start?</span><p>✓ Sitemap ✓ Design system ✓ Product assets<br>✗ Homepage design approval</p></div>
+  </div>
+</section>
+
+<!-- 8 DATA -->
+<section id="data">
+  <h2><span class="n">08</span>Data model</h2>
+  <p class="sub">The core relational model in PostgreSQL. The deliverable and its versions are the backbone; approvals attach to a specific version, never to the deliverable in general.</p>
+  <div class="sheet"><div class="diagram">
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#E7EAFA","primaryBorderColor":"#2F3E9E","primaryTextColor":"#18202E","lineColor":"#7A8397","fontFamily":"IBM Plex Sans, Segoe UI, sans-serif","fontSize":"13px"}}}%%
+erDiagram
+  ORGANIZATION ||--o{ USER : employs
+  ORGANIZATION ||--o{ CLIENT : serves
+  CLIENT ||--o{ PROJECT : commissions
+  PROJECT ||--o{ PROJECT_MEMBER : staffs
+  PROJECT ||--o{ PROJECT_STAGE : "moves through"
+  PROJECT ||--|| BRAND_PROFILE : has
+  BRAND_PROFILE ||--o{ BRAND_ASSET : contains
+  BRAND_PROFILE ||--o{ BRAND_RULE : enforces
+  PROJECT ||--o{ PRODUCT : catalogs
+  PRODUCT ||--o{ PRODUCT_VARIANT : has
+  PROJECT_STAGE ||--o{ DELIVERABLE : groups
+  DELIVERABLE ||--o{ DELIVERABLE_VERSION : "is versioned as"
+  DELIVERABLE_VERSION ||--o{ COMMENT : receives
+  DELIVERABLE_VERSION ||--o{ APPROVAL : records
+  DELIVERABLE ||--o{ DEPENDENCY : "depends on"
+  DELIVERABLE ||--o{ TASK : spawns
+  PROJECT ||--o{ SHOOT : plans
+  SHOOT ||--o{ SHOOT_SHOT : lists
+  PROJECT ||--o{ QA_ISSUE : tracks
+  PROJECT ||--o{ HANDOFF_ITEM : delivers
+  PROJECT ||--o{ AUDIT_LOG : logs
+  </div></div>
+  <p class="cap">Fig 8 · Core entities and relationships.</p>
+
+  <h3>Full table list by module</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Module</th><th>Tables</th></tr></thead>
+    <tbody>
+      <tr><td>Tenancy</td><td class="mono">users, organizations, clients, projects, project_members, project_stages</td></tr>
+      <tr><td>Brand</td><td class="mono">brand_profiles, brand_guidelines, brand_assets, brand_rules</td></tr>
+      <tr><td>Product</td><td class="mono">products, product_categories, product_collections, product_variants</td></tr>
+      <tr><td>Deliverables</td><td class="mono">deliverables, deliverable_versions, comments, feedback, approvals</td></tr>
+      <tr><td>Work</td><td class="mono">tasks, task_dependencies</td></tr>
+      <tr><td>Production</td><td class="mono">shoots, shoot_shots, shoot_lookbooks, designs, design_systems</td></tr>
+      <tr><td>Website</td><td class="mono">websites, website_pages, website_versions</td></tr>
+      <tr><td>QA</td><td class="mono">qa_projects, qa_issues, qa_checklists</td></tr>
+      <tr><td>Automation</td><td class="mono">automations, automation_triggers, automation_actions, notifications</td></tr>
+      <tr><td>Handoff &amp; audit</td><td class="mono">handoffs, handoff_items, audit_logs</td></tr>
+    </tbody>
+  </table></div>
+  <p>Every important action writes to <code>audit_logs</code>, for example: <span class="mono">23 Sep 2026 14:32 · Priya uploaded Logo V2 → 15:10 Creative Head approved Logo V2 → 16:02 Client requested changes → 17:22 Designer uploaded Logo V3 → 18:05 Client approved Logo V3</span>.</p>
+</section>
+
+<!-- 9 ROLES -->
+<section id="roles">
+  <h2><span class="n">09</span>Roles &amp; permissions</h2>
+  <p class="sub">Agency roles: Super Admin, Creative Head, Project Manager, Creative Designer, UI/UX Designer, Developer, QA, Content Manager, Photographer. Client roles: Client Admin, Client Reviewer, Client Viewer.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Role</th><th>Create</th><th>Edit</th><th>Review</th><th>Approve</th><th>Publish</th></tr></thead>
+    <tbody>
+      <tr><td>Admin</td><td class="c y">✓</td><td class="c y">✓</td><td class="c y">✓</td><td class="c y">✓</td><td class="c y">✓</td></tr>
+      <tr><td>Creative Head</td><td class="c y">✓</td><td class="c y">✓</td><td class="c y">✓</td><td class="c y">✓</td><td class="c y">✓</td></tr>
+      <tr><td>Designer</td><td class="c y">✓</td><td class="c y">✓</td><td class="c y">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+      <tr><td>Developer</td><td class="c y">✓</td><td class="c y">✓</td><td class="c y">✓</td><td class="c no">—</td><td class="c y">✓</td></tr>
+      <tr><td>QA</td><td class="c no">—</td><td class="c y">✓</td><td class="c y">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+      <tr><td>Client Admin</td><td class="c no">—</td><td class="c no">—</td><td class="c y">✓</td><td class="c y">✓</td><td class="c no">—</td></tr>
+      <tr><td>Client Viewer</td><td class="c no">—</td><td class="c no">—</td><td class="c y">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 10 ROADMAP -->
+<section id="roadmap">
+  <h2><span class="n">10</span>Delivery roadmap</h2>
+  <p class="sub">Build the workflow, deliverable and review/approval engines first. Add AI only once the underlying project data is reliable, so it does not become a flashy layer over an unstable workflow.</p>
+  <div class="road">
+    <div class="phase mvp"><h4>MVP · V1</h4><div class="t">Core engines</div><ul><li>Client management: clients, projects, members</li><li>Brand intake: Brand KT, Product KT, questionnaire</li><li>Deliverables: create, upload, version, assign</li><li>Review: comments, annotations, feedback</li><li>Approval: internal and client</li><li>Versioning V1 / V2 / V3</li><li>Project workflow stages</li><li>Client portal: review, approve, request changes</li></ul></div>
+    <div class="phase"><h4>V2</h4><div class="t">Operations</div><ul><li>Asset library</li><li>Generated brand guidelines</li><li>Shoot lookbook</li><li>QA center</li><li>Launch center</li><li>Handoff center</li><li>Automation engine</li></ul></div>
+    <div class="phase"><h4>V3</h4><div class="t">Intelligence</div><ul><li>Brand AI</li><li>Product AI</li><li>Creative AI</li><li>Project AI assistant</li><li>AI Brand QA</li><li>AI recommendations</li></ul></div>
+    <div class="phase"><h4>V4</h4><div class="t">Integrations</div><ul><li>Figma</li><li>Shopify</li><li>Google Drive, cloud storage</li><li>Slack, email, WhatsApp</li><li>GitHub</li><li>Analytics</li></ul></div>
+  </div>
+  <p><b>Next documents to produce:</b> PRD, full module specification, ER diagram with columns, API architecture, screen-by-screen UI flow and a sprint-level MVP plan.</p>
+</section>
+
+<footer>Brand OS blueprint · Derived from Docs/R&amp;D.md · Architecture proposal for review</footer>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+(function(){
+  if(!window.mermaid) return;
+  mermaid.initialize({
+    startOnLoad:false, theme:"base", securityLevel:"strict",
+    htmlLabels:false, flowchart:{padding:18, htmlLabels:false, useMaxWidth:true}, state:{padding:12}, er:{useMaxWidth:true},
+    themeVariables:{
+      background:"#FFFFFF", primaryColor:"#E7EAFA", primaryBorderColor:"#2F3E9E", primaryTextColor:"#18202E",
+      secondaryColor:"#F5F6F8", tertiaryColor:"#FFFFFF", lineColor:"#7A8397", textColor:"#18202E",
+      nodeTextColor:"#18202E", edgeLabelBackground:"#FFFFFF", labelBackground:"#FFFFFF",
+      stateLabelColor:"#18202E", transitionLabelColor:"#4A5468", attributeBackgroundColorOdd:"#FFFFFF",
+      attributeBackgroundColorEven:"#F5F6F8", fontFamily:"IBM Plex Sans, Segoe UI, sans-serif"
+    }
+  });
+  ((document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve()).then(function(){return mermaid.run({querySelector:".diagram"});}).catch(function(e){console.error(e)});
+})();
+</script>
+
+</body>
+</html>
